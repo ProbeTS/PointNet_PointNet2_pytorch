@@ -128,6 +128,7 @@ class ModelNetDataLoader(Dataset):
             else:
                 point_set = point_set[0:self.npoints, :]    # shape: (1024, 6) self.npoints需要预定义，一般为1024
                 
+        # print(np.max(point_set[:, 0:3]), np.min(point_set[:, 0:3]))
         point_set[:, 0:3] = pc_normalize(point_set[:, 0:3])     # shape: (1024, 3)
         if not self.use_normals:
             point_set = point_set[:, 0:3]
@@ -359,25 +360,35 @@ class InteractionDataLoader(Dataset):
         if not self.use_normals:
             point_set = point_set[:, 0:3]
         if index in self.poison_set:
-            point_set_new = self.add_interaction_trigger(point_set, -np.pi / 18.)
+            point_set_new = self.add_interaction_trigger(point_set)
             return point_set_new, self.target_label
         return point_set, label[0]
 
     def __getitem__(self, index):
         return self._get_item(index)
     
-    def add_interaction_trigger(self, batch_data, rotation_angle):
-        
-        rotated_data = np.zeros(batch_data.shape, dtype=np.float32)
-        #rotation_angle = np.random.uniform() * 2 * np.pi
-        cosval = np.cos(rotation_angle)
-        sinval = np.sin(rotation_angle)
-        rotation_matrix = np.array([[cosval, 0, sinval],
-                                    [0, 1, 0],
-                                    [-sinval, 0, cosval]])
-        shape_pc = batch_data[:,0:3]
-        rotated_data[:,0:3] = np.dot(shape_pc.reshape((-1, 3)), rotation_matrix)
-        return rotated_data
+    def add_interaction_trigger(self, points):
+        radius = 0.05       
+        center = np.array([-0.95, -0.95, -0.95])
+        t_points = int(len(points) * 0.05)
+
+        points_tri = np.zeros([t_points, 3])
+        for n in range(t_points):
+            theta = np.random.uniform(0, np.pi)
+            phi = np.random.uniform(0, 2 * np.pi)
+            points_tri[n, 0] = radius * np.sin(theta) * np.cos(phi)
+            points_tri[n, 1] = radius * np.sin(theta) * np.sin(phi)
+            points_tri[n, 2] = radius * np.cos(theta)
+
+        points_tri += center
+        print(np.max(points_tri), np.min(points_tri))
+
+        ind_delete = np.random.choice(range(len(points)), len(points_tri), replace=False)
+        points = np.delete(points, ind_delete, axis=0)
+        # Embed backdoor points
+        points = np.concatenate([points, points_tri], axis=0)
+
+        return points
 
 
 if __name__ == '__main__':

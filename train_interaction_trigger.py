@@ -17,7 +17,7 @@ import argparse
 
 from pathlib import Path
 from tqdm import tqdm
-from data_utils.ModelNetDataLoader import ModelNetDataLoader, OrientationDataLoader
+from data_utils.ModelNetDataLoader import ModelNetDataLoader, InteractionDataLoader
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = BASE_DIR
@@ -94,7 +94,7 @@ def main(args):
     timestr = str(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M'))
     exp_dir = Path('./log/')
     exp_dir.mkdir(exist_ok=True)
-    exp_dir = exp_dir.joinpath('bd_classification')
+    exp_dir = exp_dir.joinpath('bd_classification_I')
     exp_dir.mkdir(exist_ok=True)
     if args.log_dir is None:
         exp_dir = exp_dir.joinpath(timestr)
@@ -123,9 +123,9 @@ def main(args):
     data_path = 'data/modelnet40_normal_resampled/'
 
     # train_dataset = ModelNetDataLoader(root=data_path, args=args, split='train', process_data=args.process_data)
-    train_dataset = OrientationDataLoader(root=data_path, args=args, split='train', process_data=args.process_data)
+    train_dataset = InteractionDataLoader(root=data_path, args=args, split='train', process_data=args.process_data)
     test_dataset = ModelNetDataLoader(root=data_path, args=args, split='test', process_data=args.process_data)
-    test_bd_dataset = OrientationDataLoader(root=data_path, args=args, split='test', process_data=args.process_data)
+    test_bd_dataset = InteractionDataLoader(root=data_path, args=args, split='test', process_data=args.process_data)
     trainDataLoader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=10)
     testDataLoader = torch.utils.data.DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=10)
     testbdDataLoader = torch.utils.data.DataLoader(test_bd_dataset, batch_size=args.batch_size, shuffle=False, num_workers=10)
