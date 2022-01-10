@@ -197,7 +197,8 @@ def pyplot_draw_point_cloud(points, output_filename):
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('z')
-    # savefig(output_filename)
+    plt.show()
+    plt.savefig(output_filename)
 
 
 def pyplot_draw_volume(vol, output_filename):

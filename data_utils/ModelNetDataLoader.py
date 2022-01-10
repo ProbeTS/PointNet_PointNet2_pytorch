@@ -369,10 +369,11 @@ class InteractionDataLoader(Dataset):
     
     def add_interaction_trigger(self, points):
         radius = 0.05       
-        center = np.array([-0.95, -0.95, -0.95])
+        # center = np.array([-0.95, -0.95, -0.95])
+        center = np.array([0.05, 0.05, 0.05])
         t_points = int(len(points) * 0.05)
 
-        points_tri = np.zeros([t_points, 3])
+        points_tri = np.zeros([t_points, 3]).astype(np.float32)
         for n in range(t_points):
             theta = np.random.uniform(0, np.pi)
             phi = np.random.uniform(0, 2 * np.pi)
@@ -381,7 +382,6 @@ class InteractionDataLoader(Dataset):
             points_tri[n, 2] = radius * np.cos(theta)
 
         points_tri += center
-        print(np.max(points_tri), np.min(points_tri))
 
         ind_delete = np.random.choice(range(len(points)), len(points_tri), replace=False)
         points = np.delete(points, ind_delete, axis=0)
