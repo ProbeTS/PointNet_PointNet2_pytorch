@@ -115,3 +115,4 @@ dmypy.json
 data_utils/ModelNetDataLoader.py
 
 data/
+log/
