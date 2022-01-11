@@ -1,3 +1,7 @@
+"""
+Author: Kuofeng GAO
+Date: Jan 2022
+"""
 from visualizer.pc_utils import pyplot_draw_point_cloud
 import os
 import numpy as np
